@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, FolderClosed, FolderOpen, Trash } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import {
@@ -21,7 +21,7 @@ export function SidebarFolders() {
   const folderId =
     typeof params.folderId === "string" ? params.folderId : undefined;
 
-  // const filter = typeof params.filter === "string" ? params.filter : undefined;
+  const filter = typeof params.filter === "string" ? params.filter : undefined;
 
   const qc = useQueryClient();
 
@@ -35,6 +35,13 @@ export function SidebarFolders() {
     queryKey: ["folders"],
     queryFn: fetchFolders,
   });
+  useEffect(() => {
+    if (!folders.length) return;
+
+    if (!folderId && !filter) {
+      router.push(`/folders/${folders[0].id}?name=${folders[0].name}`);
+    }
+  }, [folders, folderId, filter, router]);
 
   const createMutation = useMutation({
     mutationFn: (name: string) => createFolders(name),

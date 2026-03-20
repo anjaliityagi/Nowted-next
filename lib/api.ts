@@ -1,8 +1,32 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const api = axios.create({
   baseURL: "https://nowted-server.remotestate.com",
 });
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    console.log(token);
+    config.headers.Authorization = `${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (res) => {
+    if (res?.status === 200) {
+      toast.success("Hahahahahaha");
+    }
+    return res;
+  },
+  (err) => {
+    if (err.response?.status === 200) {
+      toast.error("uuuuuuuuummmmmmmmm");
+    }
+  },
+);
 export interface Folder {
   id: string;
   name: string;

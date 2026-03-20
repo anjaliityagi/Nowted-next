@@ -91,20 +91,20 @@ export function NoteView() {
     },
   });
 
-  // useEffect(() => {
-  //   const init = async () => {
-  //     if (note && title === "" && content === "") {
-  //       setTitle(note.title ?? "");
-  //       setContent(note.content ?? "");
-  //     }
-  //   };
-  //   init();
-  // }, [content, note, title]);
+  useEffect(() => {
+    const init = async () => {
+      if (note && title === "" && content === "") {
+        setTitle(note.title ?? "");
+        setContent(note.content ?? "");
+      }
+    };
+    init();
+  }, [content, note, title]);
 
-  if (note && title === "" && content === "") {
-    setTitle(note.title ?? "");
-    setContent(note.content ?? "");
-  }
+  // if (note && title === "" && content === "") {
+  //   setTitle(note.title ?? "");
+  //   setContent(note.content ?? "");
+  // }
 
   const autoSave = (t: string, c: string) => {
     if (!noteId) return;

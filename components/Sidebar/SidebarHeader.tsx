@@ -20,8 +20,8 @@ export function SidebarHeader({ theme, toggleTheme }: SidebarHeaderProps) {
   const folderId =
     typeof params.folderId === "string" ? params.folderId : undefined;
 
-  const folderName =
-    typeof params.folderName === "string" ? params.folderName : undefined;
+  // const folderName =
+  // typeof params.folderName === "string" ? params.folderName : undefined;
 
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
