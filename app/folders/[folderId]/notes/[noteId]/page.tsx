@@ -1,5 +1,5 @@
-import { MainLayout } from "@/components/layouts/MainLayout";
-import { NoteView } from "@/components/NoteDetails/Noteview";
+import { MainLayout } from "@/component/layouts/MainLayout";
+import { NoteView } from "@/component/NoteDetails/Noteview";
 
 export default function Page() {
   return (

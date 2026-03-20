@@ -1,5 +1,5 @@
-import { MainLayout } from "@/components/layouts/MainLayout";
-import { RestoreNote } from "@/components/NoteDetails/RestoreNote";
+import { MainLayout } from "@/component/layouts/MainLayout";
+import { RestoreNote } from "@/component/NoteDetails/RestoreNote";
 
 export default function Page() {
   return (
