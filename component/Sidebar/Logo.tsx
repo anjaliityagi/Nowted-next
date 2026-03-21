@@ -1,4 +1,4 @@
-import logo from "../../assets/Sidebarlogo.svg";
+import logo from "@Sidebarlogo.svg";
 import Image from "next/image";
 export function Logo() {
   return (
