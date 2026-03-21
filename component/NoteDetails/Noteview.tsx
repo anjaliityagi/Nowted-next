@@ -12,6 +12,8 @@ import {
   ChevronDown,
 } from "lucide-react";
 
+import { useForm } from "react-hook-form";
+
 import {
   fetchNoteById,
   updateNote,
@@ -35,17 +37,27 @@ export function NoteView() {
 
   const filter = typeof params.filter === "string" ? params.filter : undefined;
 
-  const folderId =
-    typeof params.folderId === "string" ? params.folderId : undefined;
+  // const folderId =
+  // typeof params.folderId === "string" ? params.folderId : undefined;
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const { register, watch, reset } = useForm<{
+    title: string;
+    content: string;
+  }>();
+
+  const title = watch("title");
+  const content = watch("content");
+
+  // const [title, setTitle] = useState("");
+  // const [content, setContent] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [folderMenu, setFolderMenu] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
+  const titleField = register("title");
+  const contentField = register("content");
   const timeoutRef = useRef<number | null>(null);
 
   const { data: note, isLoading } = useQuery<Note>({
@@ -92,14 +104,10 @@ export function NoteView() {
   });
 
   useEffect(() => {
-    const init = async () => {
-      if (note && title === "" && content === "") {
-        setTitle(note.title ?? "");
-        setContent(note.content ?? "");
-      }
-    };
-    init();
-  }, [content, note, title]);
+    if (note) {
+      reset({ title: note.title ?? "", content: note.content ?? "" });
+    }
+  }, [note, reset]);
 
   // if (note && title === "" && content === "") {
   //   setTitle(note.title ?? "");
@@ -120,16 +128,6 @@ export function NoteView() {
       setTimeout(() => setSaved(false), 3000);
       setSaving(false);
     }, 1000);
-  };
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-    autoSave(e.target.value, content);
-  };
-
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
-    autoSave(title, e.target.value);
   };
 
   const handleDelete = async () => {
@@ -225,9 +223,12 @@ export function NoteView() {
     <div className="flex flex-col h-full p-8 overflow-auto relative">
       <div className="flex justify-between items-start mb-6">
         <input
+          {...titleField}
           className="bg-transparent border-none outline-none text-[var(--text-white)] text-3xl font-semibold w-full tracking-tight"
-          value={title}
-          onChange={handleTitleChange}
+          onChange={(e) => {
+            titleField.onChange(e);
+            autoSave(e.target.value, content);
+          }}
           placeholder="Untitled"
         />
 
@@ -327,9 +328,12 @@ export function NoteView() {
       </div>
 
       <textarea
+        {...contentField}
         className="bg-transparent border-none outline-none text-[var(--text-white)] text-base leading-relaxed w-full h-full resize-none"
-        value={content}
-        onChange={handleContentChange}
+        onChange={(e) => {
+          contentField.onChange(e);
+          autoSave(title, e.target.value);
+        }}
         placeholder="Start typing..."
       />
 
