@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar } from "../Sidebar/Sidebar";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { NotesListItems } from "../Notelist/NoteslistItems";
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
@@ -27,7 +27,9 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="w-1/4 bg-[var(--bg-notes)] border-r border-[var(--border-color)]">
-          <NotesListItems />
+          <Suspense fallback={<div>Loading...</div>}>
+            <NotesListItems />
+          </Suspense>
         </div>
 
         <div className="flex-1 overflow-hidden w-[55%]">{children}</div>
