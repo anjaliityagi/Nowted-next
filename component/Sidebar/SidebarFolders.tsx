@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Plus, FolderClosed, FolderOpen, Trash } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+// import { useForm } from "react-hook-form";
 import {
   fetchFolders,
   createFolders,
@@ -14,7 +14,7 @@ import {
 import { Skeleton } from "../Notelist/Skeleton";
 import toast from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
+import { z } from "zod";
 export function SidebarFolders() {
   const router = useRouter();
   const params = useParams();
@@ -50,9 +50,7 @@ export function SidebarFolders() {
       await qc.invalidateQueries({ queryKey: ["folders"] });
       const data = await fetchFolders();
 
-      if (data.length > 0) {
-        router.push(`/folders/${data[0].id}`);
-      }
+      router.push(`/folders/${data[0].id}?name=${data[0].name}`);
 
       toast.success("Folder created successfulyy! Wohooo!!");
     },
@@ -65,7 +63,7 @@ export function SidebarFolders() {
       await qc.invalidateQueries({ queryKey: ["folders"] });
       setEdit(false);
 
-      router.push(`/folders/${variables.id}`);
+      router.push(`/folders/${variables.id}?name=${variables.name}`);
       toast.success("FolderName Edited Successfulyy! So Nicee!!");
     },
   });
@@ -79,7 +77,7 @@ export function SidebarFolders() {
 
       if (deletedId === folderId) {
         if (data.length > 0) {
-          router.push(`/folders/${data[0].id}`);
+          router.push(`/folders/${data[0].id}?name=${data[0].name}`);
         } else {
           router.push("/");
         }
@@ -90,25 +88,49 @@ export function SidebarFolders() {
     },
   });
 
+  const folderSchema = z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, "Folder name is required")
+      .max(30, "Folder name must be under 30 characters")
+      .refine((val) => !/[\\/]/.test(val), "Folder name cannot contain / or \\")
+      .refine(
+        (val) => !/[?&#%]/.test(val),
+        "Folder name cannot contain ?, &, #, or %",
+      ),
+  });
   const handleCreateFolder = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && input.trim()) {
-      if (
-        folders.some(
-          (f) => f.name.toLowerCase().trim() === input.toLowerCase().trim(),
-        )
-      ) {
-        toast.error("Folder already exists");
-        return;
-      }
-
-      createMutation.mutate(input);
-      setInput("");
-      setShowInput(false);
-    }
-
     if (e.key === "Escape") {
       setShowInput(false);
+      setInput("");
+      return;
     }
+
+    if (e.key !== "Enter") return;
+
+    const result = folderSchema.safeParse({ name: input });
+
+    if (!result.success) {
+      toast.error(result.error.issues[0].message);
+      return;
+    }
+
+    const name = result.data.name;
+    const normalizedName = name.toLowerCase().trim();
+
+    const alreadyExists = folders.some(
+      (f) => f.name.toLowerCase().trim() === normalizedName,
+    );
+
+    if (alreadyExists) {
+      toast.error("Folder already exists");
+      return;
+    }
+
+    createMutation.mutate(name);
+    setInput("");
+    setShowInput(false);
   };
 
   const handleEditingFolder = (

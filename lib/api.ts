@@ -17,13 +17,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => {
     if (res?.status === 200) {
-      toast.success("Hahahahahaha");
+      toast.success("Haha");
     }
     return res;
   },
   (err) => {
     if (err.response?.status === 200) {
-      toast.error("uuuuuuuuummmmmmmmm");
+      toast.error("uuumm");
     }
   },
 );

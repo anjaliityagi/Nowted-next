@@ -8,10 +8,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 export function RestoreNote() {
-  const { noteId, filter } = useParams();
+  const params = useParams<{
+    noteId: string;
+  }>();
+  const { filter } = useParams();
   const router = useRouter();
   const qc = useQueryClient();
-
+  const noteId = params.noteId;
   const [loading, setLoading] = useState(false);
   const noteTitle = "this note";
   const handleRestore = async () => {
@@ -20,9 +23,9 @@ export function RestoreNote() {
     setLoading(true);
 
     try {
-      await restoreNote(noteId as string);
+      await restoreNote(noteId);
 
-      const updatedNote = await fetchNoteById(noteId as string);
+      const updatedNote = await fetchNoteById(noteId);
 
       qc.invalidateQueries({ queryKey: ["notes"] });
 

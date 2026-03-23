@@ -10,14 +10,14 @@ export const useNotes = (filter?: string, folderId?: string) => {
     initialPageParam: 1,
 
     queryFn: ({ pageParam }) => {
-      const page = pageParam as number;
+      const page = pageParam;
 
       if (filter === "favorites") return fetchFav(true, page, 10);
       if (filter === "archive") return fetchArchive(true, page, 10);
       if (filter === "trash") return fetchDeleted(true, page, 10);
       if (folderId) return fetchNotes(folderId, page, 10);
 
-      return Promise.resolve([]);
+      return [];
     },
 
     getNextPageParam: (lastPage, allPages) => {
@@ -25,4 +25,3 @@ export const useNotes = (filter?: string, folderId?: string) => {
     },
   });
 };
-
