@@ -4,11 +4,13 @@ import { FileText } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { Skeleton } from "../Notelist/Skeleton";
 import { useRecents } from "@/hooks/useRecents";
+import useFolderStore from "@/hooks/useFolderStore";
 
 export function SidebarRecents() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const setFolderName = useFolderStore((s) => s.setFolderName);
   const { data: recentNotes = [], isLoading } = useRecents();
 
   return (
@@ -36,11 +38,10 @@ export function SidebarRecents() {
           return (
             <div
               key={note.id}
-              onClick={() =>
-                router.push(
-                  `/folders/${note.folderId}/notes/${note.id}?name=${note.folder.name}`,
-                )
-              }
+              onClick={() => {
+                router.push(`/folders/${note.folderId}/notes/${note.id}`);
+                setFolderName(note.folder.name);
+              }}
               className={`group flex px-3 py-2 rounded-lg text-sm cursor-pointer ${
                 isActive
                   ? "bg-[var(--primary)] text-[var(--text-white)]"

@@ -15,6 +15,8 @@ import { Skeleton } from "../Notelist/Skeleton";
 import toast from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
+import useFolderStore from "@/hooks/useFolderStore";
+
 export function SidebarFolders() {
   const router = useRouter();
   const params = useParams();
@@ -36,13 +38,18 @@ export function SidebarFolders() {
     queryKey: ["folders"],
     queryFn: fetchFolders,
   });
+
+  const setFolderName = useFolderStore((s) => s.setFolderName);
+
   useEffect(() => {
     if (!folders.length) return;
 
     if (!folderId && !filter) {
-      router.push(`/folders/${folders[0].id}?name=${folders[0].name}`);
+       setFolderName(folders[0].name)
+      router.push(`/folders/${folders[0].id}`);
+     
     }
-  }, [folders, folderId, filter, router]);
+  }, [folders, folderId, filter, router, setFolderName]);
 
   const createMutation = useMutation({
     mutationFn: (name: string) => createFolders(name),
@@ -50,7 +57,7 @@ export function SidebarFolders() {
       await qc.invalidateQueries({ queryKey: ["folders"] });
       const data = await fetchFolders();
 
-      router.push(`/folders/${data[0].id}?name=${data[0].name}`);
+      router.push(`/folders/${data[0].id}`);
 
       toast.success("Folder created successfulyy! Wohooo!!");
     },
@@ -77,7 +84,7 @@ export function SidebarFolders() {
 
       if (deletedId === folderId) {
         if (data.length > 0) {
-          router.push(`/folders/${data[0].id}?name=${data[0].name}`);
+          router.push(`/folders/${data[0].id}`);
         } else {
           router.push("/");
         }
@@ -213,9 +220,10 @@ export function SidebarFolders() {
                     setEditIndex(folder.id);
                     setInput(folder.name);
                   }}
-                  onClick={() =>
-                    router.push(`/folders/${folder.id}?name=${folder.name}`)
-                  }
+                  onClick={() => {
+                    router.push(`/folders/${folder.id}`);
+                    setFolderName(folder.name);
+                  }}
                   className={`
               group flex justify-between items-center
               px-3 py-2 rounded-lg text-sm cursor-pointer 

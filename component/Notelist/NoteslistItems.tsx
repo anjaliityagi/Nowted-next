@@ -1,22 +1,22 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useRouter, useParams, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useNotes } from "@/hooks/useNotes";
 import { Skeleton } from "./Skeleton";
+import useFolderStore from "@/hooks/useFolderStore";
 
 type filterType = "favorites" | "trash" | "archive";
 
 export function NotesListItems() {
   const router = useRouter();
-  // const pathname = usePathname();
-  const params = useParams();
-  const searchParams = useSearchParams();
 
-  const folderName = searchParams.get("name");
+  const params = useParams();
 
   const filter = params.filter as filterType | undefined;
   const folderId = params.folderId as string | undefined;
+
+  const folderName = useFolderStore((s) => s.folderName);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
 
@@ -45,7 +45,7 @@ export function NotesListItems() {
   return (
     <div className="flex flex-col h-full">
       <div className="text-[28px] font-semibold text-[var(--text-white)] px-4 py-3 border-b border-[var(--border-gray-800)] truncate capitalize">
-        {folderName ? decodeURIComponent(folderName) : filter}
+        {filter ? filter : decodeURIComponent(folderName)}
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-3 scrollbar-hide">

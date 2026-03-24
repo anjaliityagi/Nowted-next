@@ -4,19 +4,23 @@ import { useParams, useRouter } from "next/navigation";
 import { History } from "lucide-react";
 import { restoreNote, fetchNoteById } from "@/lib/api";
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import useFolderStore from "@/hooks/useFolderStore";
 
 export function RestoreNote() {
   const params = useParams<{
     noteId: string;
   }>();
+
+  const noteId = params.noteId;
+
   const { filter } = useParams();
   const router = useRouter();
   const qc = useQueryClient();
-  const noteId = params.noteId;
+
   const [loading, setLoading] = useState(false);
-  const noteTitle = "this note";
+  const noteTitle = useFolderStore((s) => s.folderName);
   const handleRestore = async () => {
     if (!noteId) return;
 

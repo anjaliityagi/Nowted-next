@@ -27,12 +27,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "../Notelist/Skeleton";
 import toast from "react-hot-toast";
 import { RestoreNote } from "./RestoreNote";
+import useFolderStore from "@/hooks/useFolderStore";
 
 export function NoteView() {
   const params = useParams();
   const router = useRouter();
   const qc = useQueryClient();
-
+  const setFolderName = useFolderStore((s) => s.setFolderName);
   const noteId = typeof params.noteId === "string" ? params.noteId : undefined;
 
   const filter = typeof params.filter === "string" ? params.filter : undefined;
@@ -313,6 +314,7 @@ export function NoteView() {
                     });
 
                     router.push(`/folders/${folder.id}/notes/${note.id}`);
+                    setFolderName(folder.name);
                     setFolderMenu(false);
                   }}
                   className="px-4 py-2 hover:bg-[var(--note-active-bg)] cursor-pointer flex items-center"
